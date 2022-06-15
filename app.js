@@ -1,6 +1,6 @@
 const section = document.querySelector('section');
 const livesCount = document.getElementById('livesCount');
-const lives = 5;
+let lives = 5;
 
 livesCount.textContent = lives;
 
@@ -61,16 +61,55 @@ const checkPoster = (e) => {
     const clickedPoster = e.target;
     clickedPoster.classList.add("flipped")
     const flippedPosters = document.querySelectorAll('.flipped');
+
+    const togglePoster = document.querySelectorAll('.togglePoster');
     
     if(flippedPosters.length === 2){
         if(flippedPosters[0].getAttribute('name')===flippedPosters[1].getAttribute('name')){
             console.log("match");
+            flippedPosters.forEach(poster =>{
+                poster.classList.remove('flipped');
+                poster.style.pointerEvents = 'none';
+            })
+
         }else{
             console.log("Wrong");
+            flippedPosters.forEach(poster =>{
+                poster.classList.remove('flipped');
+                setTimeout(() => poster.classList.remove('togglePoster'), 1000);
+            });
+            lives--;
+            livesCount.textContent = lives;
+            if(lives === 0){
+                restartGame("Try Again!");
+            }
         }
     }
     
-    console.log(clickedPoster);
+    if(togglePoster.length === 16){
+        restartGame("You Won! ^_^")
+    }
+}
+
+const restartGame = (text) => {
+    let posterData = selectRandom();
+    let faces = document.querySelectorAll(".face");
+    let posters = document.querySelectorAll(".poster");
+
+    section.style.pointerEvents = 'none';
+
+    posterData.forEach((item,index) => {
+        posters[index].classList.remove('togglePoster');
+        setTimeout(() => {
+            posters[index].style.pointerEvents = "all";
+            faces[index].src = item.poster;
+            faces[index].setAttribute("name",item.name);
+            section.style.pointerEvents = 'none';
+        },1000)
+    });
+    lives = 5;
+    livesCount.textContent = lives;
+    setTimeout(() => window.alert(text),1000);
 }
 
 posterGenerator();
